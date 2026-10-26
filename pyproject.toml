@@ -19,6 +19,10 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=8"]
 
+[project.scripts]
+# `pip install .` puts a `cache-cli` command on the PATH.
+cache-cli = "cli.main:main"
+
 [tool.setuptools.packages.find]
 include = ["app*", "cli*"]
 
