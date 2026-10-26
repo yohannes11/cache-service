@@ -1,0 +1,29 @@
+# Runs the service against PostgreSQL. For a quick SQLite-only run, use the
+# Dockerfile alone (see README).
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: cache
+      POSTGRES_PASSWORD: cache
+      POSTGRES_DB: cache
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cache"]
+      interval: 5s
+      retries: 10
+
+  api:
+    build: .
+    environment:
+      CACHE_DATABASE_URL: postgresql+psycopg://cache:cache@db:5432/cache
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        # Wait until Postgres accepts connections, not just until it starts.
+        condition: service_healthy
+
+volumes:
+  pgdata:
